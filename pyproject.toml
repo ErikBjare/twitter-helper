@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "twitter-helper"
+version = "0.1.0"
+description = ""
+authors = ["Erik Bjäreholt <erik@bjareho.lt>"]
+repository = "https://github.com/ErikBjare/twitter-helper"
+packages = [
+    { include = "twitter_helper" },
+]
+
+
+[tool.poetry.scripts]
+twitter-helper = "twitter_helper.main:main"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+tweepy = "^4.9.0"
+python-dotenv = "^0.20.0"
+tabulate = "^0.8.9"
+joblib = "^1.1.0"
+click = "^8.1.3"
+types-tabulate = "^0.8.9"
+
+[tool.poetry.dev-dependencies]
+mypy = "*"
+pytest = "*"
+pytest-dotenv = "*"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

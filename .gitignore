@@ -1,0 +1,6 @@
+.env
+tags
+
+*.pyc
+__pycache__
+.cache
