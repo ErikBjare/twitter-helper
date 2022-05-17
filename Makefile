@@ -5,4 +5,4 @@ test:
 	poetry run pytest
 
 typecheck:
-	poetry run mypy twitter_helper
+	poetry run mypy --ignore-missing-imports twitter_helper

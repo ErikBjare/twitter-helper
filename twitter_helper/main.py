@@ -32,21 +32,33 @@ def info():
         raise
 
 
+@main.command()
+def limits():
+    """Checks rate limits"""
+    check_limits()
+
+
 def check_limits():
+    limits_used = False
     api = get_api()
-    status = api.rate_limit_status(resources="users")
+    status = api.rate_limit_status()
     # print(status["resources"]["users"].keys())
-    liked = status["resources"]["users"]["/users/:id/liked_tweets"]
+    for group in status["resources"].values():
+        for endpoint in group.keys():
+            remaining = group[endpoint]["remaining"]
+            limit = group[endpoint]["limit"]
+            if remaining != limit:
+                # timestamp of when rate limit resets
+                reset_dt = datetime.fromtimestamp(group[endpoint]["reset"])
 
-    # timestamp of when rate limit resets
-    reset_dt = datetime.fromtimestamp(liked["reset"])
-
-    # print time until reset
-    now = datetime.now()
-    delta = reset_dt - now
-    print(
-        f"Rate limit exceeded. Remaining: {liked['remaining']}. Reset in {delta.total_seconds()} seconds."
-    )
+                now = datetime.now()
+                delta = reset_dt - now
+                print(
+                    f"{endpoint}: {remaining}/{limit}   (resets in {round(delta.total_seconds(), 1)})"
+                )
+                limits_used = True
+    if not limits_used:
+        print("No rate limits active")
 
 
 @main.command()
@@ -90,6 +102,15 @@ def print_info():
 
 
 def get_auth():
+    assert all(
+        key in os.environ
+        for key in [
+            "CONSUMER_KEY",
+            "CONSUMER_SECRET",
+            "ACCESS_TOKEN",
+            "ACCESS_TOKEN_SECRET",
+        ]
+    ), "API keys not set in the environment, read the README!"
     # read keys from env vars
     consumer_key = os.environ["CONSUMER_KEY"]
     consumer_secret = os.environ["CONSUMER_SECRET"]
